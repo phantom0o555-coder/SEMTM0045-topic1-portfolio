@@ -28,99 +28,187 @@
 
 \section{Abstract}
 
-This portfolio examines the problem of evaluating classical machine learning models under limited and imbalanced data conditions. The project is motivated by the concern that common validation procedures may produce unstable, overly optimistic, or insufficiently transparent performance estimates when sample size is small and uncertainty is high. The report reviews the relevant literature, identifies a methodological research gap, and proposes a study design that compares common evaluation protocols with greater attention to uncertainty-aware reporting and imbalance-sensitive metric selection. The intended contribution is not a new predictive algorithm, but a more reliable and transparent evaluation framework for constrained-data settings.
+This portfolio addresses the methodological challenge of evaluating classical machine learning models under limited and imbalanced data conditions. The project is motivated by the concern that common validation procedures may generate unstable, overly optimistic, or insufficiently transparent performance estimates when sample size is small and uncertainty is high. The report critically reviews the literature on cross-validation, uncertainty estimation, selection bias, and imbalance-sensitive metric choice, and identifies a gap in the integration of these issues into a coherent practical framework for model assessment. In response, the portfolio proposes a comparative study design that evaluates common validation protocols with explicit attention to estimate stability, uncertainty-aware reporting, and metric appropriateness under class imbalance. The intended contribution is not a new predictive algorithm, but a more reliable and methodologically defensible framework for evaluating classical machine learning models in constrained-data settings.
 
 \section{Introduction}
 
-Machine learning performance evaluation is often treated as a routine part of model development. However, this assumption becomes questionable when models are trained and tested on limited datasets. In such settings, performance estimates may become highly sensitive to sample composition, validation design, and metric choice. This creates a methodological challenge: a model may appear to perform well during development while the reported estimate is actually unstable or misleading.
+Reliable performance evaluation is central to machine learning research and practice. Reported model quality is often used to justify model selection, support claims about generalisability, and inform practical deployment. However, the credibility of such claims depends not only on the predictive model itself, but also on the evaluation procedure used to assess it. This issue becomes especially important when models are developed under constrained-data conditions, where limited sample size and class imbalance can make performance estimates unstable, overly optimistic, or difficult to interpret.
 
-This problem becomes more serious when class imbalance is also present. Metrics such as accuracy or even general ranking summaries may fail to capture the quality of prediction for the minority class. As a result, the evaluation problem is not only about how to split the data, but also about how to interpret and communicate model performance in a transparent and trustworthy way.
+In many applied studies, model evaluation is still treated as a relatively routine stage of the workflow. A dataset is divided into training and testing subsets, a model is fitted, and one or more summary metrics are reported. While this process appears straightforward, the methodological literature suggests that such simplicity can be misleading. Cross-validation procedures differ substantially in their statistical properties, and their outputs should not be treated as interchangeable. Moreover, uncertainty in validation results is often much larger than is implied by a single reported score, especially when sample sizes are small or when resampling-based estimates are interpreted without sufficient caution.
 
-The focus of this portfolio is therefore not on proposing a new model, but on addressing a methodological question: how should classical machine learning models be evaluated under limited and imbalanced data conditions so that model comparison is more reliable and uncertainty is more clearly represented?
+The problem is compounded when class imbalance is present. In such settings, conventional metrics may fail to capture the practical quality of prediction, particularly for minority classes. A model may achieve apparently strong overall performance while still performing poorly on the cases that matter most. This means that evaluation design involves at least two interconnected questions: how data should be split or resampled, and how model performance should be measured and reported. Both questions become more difficult under limited-data conditions, where each observation has greater influence on the final estimate.
+
+The literature also suggests that evaluation problems are not restricted to the final train--test comparison. Bias may enter earlier through the model selection process itself. If validation results are noisy, repeated tuning and comparison may lead to overfitting at the selection stage, even when the final model appears to have been evaluated appropriately. As a result, unreliable evaluation is not merely a statistical inconvenience; it is a methodological issue that can distort conclusions about which model should be trusted.
+
+For these reasons, this portfolio focuses on the problem of \emph{evaluation under uncertainty and limited data}. Rather than proposing a new predictive algorithm, the report examines how common evaluation protocols behave under constrained-data conditions and whether more uncertainty-aware validation strategies can provide a more trustworthy basis for model comparison. The emphasis is therefore methodological rather than algorithmic. The project is concerned with how machine learning models should be judged when evidence is limited, variability is substantial, and apparently strong results may not be as reliable as they first appear.
 
 \section{Critical Literature Review}
 
 \subsection{Cross-validation as an evaluation framework}
 
-The literature shows that cross-validation is not a single standardised technique, but a family of evaluation procedures with different strengths, weaknesses, and use cases. Foundational work has demonstrated that validation design should be matched to the purpose of the analysis rather than treated as a routine default choice. In particular, different procedures involve different bias-variance trade-offs and different implications for model selection.
+A useful starting point for this topic is the recognition that cross-validation is not a single method, but a broad family of procedures with different goals and statistical properties. Arlot and Celisse (2010) provide one of the most comprehensive overviews of this landscape, showing that validation procedures differ in bias, variance, computational cost, and appropriateness for model selection or risk estimation. Their analysis is important because it challenges the common practical assumption that any cross-validation procedure is an acceptable generic solution. Instead, evaluation design must be understood as a methodological choice that depends on the structure of the problem, the available sample size, and the intended interpretation of the reported score.
 
-\subsection{Uncertainty and instability in limited-data settings}
+This perspective is reinforced by more practice-oriented work such as Yates et al. (2022/2023), who argue that evaluation should not be reduced to selecting the highest mean validation score. Their discussion highlights issues such as estimation uncertainty, bias correction, and cautious decision rules in model comparison. Taken together, these studies establish an important baseline for the present portfolio: evaluation protocols should be selected deliberately rather than used by convention. This provides the foundation for a more critical discussion of why limited-data settings make this choice especially consequential.
 
-A major theme in the literature is that small sample sizes can make performance estimates far less stable than they appear. Methodological studies have shown that uncertainty in cross-validation is difficult to estimate reliably, and that naive interpretations of validation scores may lead to underestimation of error variability. Applied evidence also suggests that simple train/test splits are especially unstable in small-data settings.
+\subsection{Uncertainty and instability in limited-data evaluation}
 
-\subsection{Selection bias in performance evaluation}
+One of the strongest themes in the literature is that performance estimation becomes substantially less reliable when sample size is small. This is not simply because noise increases in an intuitive sense, but because the statistical behaviour of validation procedures becomes more fragile. Grandvalet and Bengio (2004) make this point at a fundamental level by proving that there is no universally unbiased estimator of the variance of k-fold cross-validation. This result is highly significant for the current topic because it demonstrates that uncertainty in model evaluation is not merely underreported in practice; it is also intrinsically difficult to estimate in a principled way. In other words, the problem is structural rather than cosmetic.
 
-The literature also shows that evaluation bias does not arise only from train/test division. Model selection itself can overfit noisy validation results, producing overly optimistic performance claims. This means that evaluation should be understood as a full methodological process rather than a single final score.
+Nadeau and Bengio (2003) reach a closely related conclusion in their work on inference for the generalisation error. They show that naive treatment of repeated validation estimates as independent observations can underestimate variance and lead to unreliable statistical comparisons between algorithms. This matters because it suggests that even when researchers attempt to move beyond a single train--test split, the interpretation of repeated resampling results remains methodologically delicate. More data points in the output do not automatically translate into more trustworthy evidence.
 
-\subsection{Imbalanced data and metric choice}
+These concerns become even more visible in small-sample applications. Varoquaux (2018) argues that cross-validation in small datasets can produce error bars large enough to undermine apparently strong conclusions. The key insight here is not simply that variability exists, but that the practical significance of that variability is often underappreciated. A model may appear to outperform another under one split or one validation protocol, yet the underlying uncertainty may be so large that the observed difference is not robust. This is particularly relevant for the present portfolio because it directly motivates a shift away from point-estimate thinking and towards uncertainty-aware evaluation.
 
-Another important theme concerns the role of metric choice. In imbalanced classification problems, conventional metrics may provide incomplete or misleading signals. This suggests that validation protocol and metric selection must be considered together rather than as separate design decisions.
+Zantvoort et al. (2024) further extend this concern by showing that very small datasets can systematically inflate confidence in predictive performance. Their work suggests that limited data does not merely make estimates noisier; it can also create a systematic tendency towards over-optimistic interpretation, particularly when more complex models are used. This strengthens the case for a methodological framework that is not only variance-aware but also cautious about how results are communicated.
 
-\subsection{Practical and applied validation design}
+\subsection{Selection bias and over-optimistic evaluation}
 
-Recent applied studies provide further evidence that validation design affects not only internal stability but also practical relevance. In particular, work on real-world datasets shows that realistic validation design may need to consider repeated resampling, grouped data structure, or temporal separation in order to reflect deployment conditions more faithfully.
+A second major theme in the literature is that unreliable evaluation may arise not only from the final validation protocol, but also from the model selection process itself. Cawley and Talbot (2010) argue that model selection criteria can overfit noisy validation outcomes, creating selection bias that inflates reported performance. This contribution is especially important because it broadens the problem definition. Evaluation instability is not solely a matter of how the data is split at the end of the pipeline; it is also a consequence of how repeated comparisons and tuning decisions are made during development.
+
+This argument has strong implications for studies conducted under limited-data conditions. When data are scarce, each validation estimate is more sensitive to sample composition, which increases the risk that model choice is driven by random fluctuations rather than genuine differences in predictive ability. As a result, evaluation cannot be treated as a final technical step. It must instead be treated as a full methodological process in which protocol choice, metric choice, and model comparison strategy interact.
+
+\subsection{Imbalanced data and the role of metric choice}
+
+While much of the methodological literature focuses on uncertainty and validation design, another important aspect of the topic concerns how model performance is measured. This becomes particularly important when class imbalance is present, which is common in many constrained-data applications. Saito and Rehmsmeier (2015) show that precision--recall analysis can be more informative than ROC-based evaluation in imbalanced binary classification. Their argument is highly relevant because it demonstrates that evaluation reliability depends not only on how data are resampled, but also on whether the chosen metric reflects the practical prediction goal.
+
+This point is especially important for Topic 1. If a validation protocol produces a stable estimate of an inappropriate metric, the resulting evaluation may still be misleading. In other words, methodological reliability cannot be reduced to resampling design alone. Zhao et al. (2025) reinforce this broader perspective by surveying the small-sample imbalance problem as a joint methodological challenge rather than two separate technical inconveniences. Their review suggests that limited sample size and imbalance often interact in ways that require integrated treatment. This is directly aligned with the present portfolio, which seeks to connect uncertainty-aware validation with imbalance-sensitive metric selection.
+
+\subsection{Applied validation design and practical relevance}
+
+Theoretical concerns about instability and bias are supported by a growing body of applied evidence. Singh et al. (2021), working in cardiovascular imaging, compare multiple validation regimens and show that single split-sample validation produces considerably less stable performance estimates than repeated cross-validation or bootstrap-based approaches. This finding is important because it demonstrates that methodological warnings in the statistical literature have direct practical consequences in real small-data scenarios.
+
+Similarly, Allgaier and Pryss (2024) show that evaluation design must reflect realistic deployment conditions, especially when hidden group structure or temporal drift is present. Their work broadens the discussion from internal validation stability to external validity and practical relevance. This is useful for the present report because it suggests that trustworthy evaluation is not only a question of statistical precision, but also of whether the testing design meaningfully reflects the structure of the real-world task.
+
+\subsection{Critical synthesis}
+
+Across these strands of literature, several conclusions emerge consistently. First, validation protocol choice matters substantially, particularly when data are limited. Second, uncertainty in performance estimation is both methodologically important and difficult to quantify reliably. Third, model selection can itself distort evaluation, especially when noisy validation results are repeatedly exploited. Fourth, metric choice is inseparable from evaluation design in imbalanced settings. Finally, applied studies confirm that these are not merely theoretical concerns but real methodological risks in practical machine learning.
+
+At the same time, the literature reveals an unresolved tension. Many papers successfully identify sources of instability, bias, or misinterpretation, but fewer integrate these insights into a single practical framework for evaluation and reporting. In particular, the connection between uncertainty-aware resampling, imbalance-sensitive metric selection, and transparent model comparison remains less clearly structured than the individual components themselves. This unresolved issue motivates the research gap developed in the next section.
 
 \section{Research Gap and Objectives}
 
-Although the literature clearly recognises that limited-data evaluation is unstable, several issues remain insufficiently addressed. First, many studies continue to emphasise average performance estimates more strongly than the practical interpretation of uncertainty. Second, the interaction between limited sample size and class imbalance is not always treated in a sufficiently integrated way. Third, while many papers compare validation procedures in terms of variance reduction, fewer directly address whether different protocols materially change the trustworthiness of model comparison and reporting.
+The literature reviewed above establishes that model evaluation under limited-data conditions is inherently fragile. Foundational studies have shown that cross-validation procedures differ in important statistical ways, that uncertainty in validation estimates is difficult to quantify reliably, and that model selection itself can introduce bias into reported performance. Additional work on imbalanced classification has shown that metric choice can strongly affect interpretation, while applied studies demonstrate that different validation designs can materially change the apparent stability of model performance.
 
-Therefore, the main research gap identified in this portfolio is the lack of a clear and practical evaluation framework that integrates validation-protocol comparison, uncertainty-aware reporting, and imbalance-sensitive metric selection for classical machine learning models under constrained-data conditions.
+However, despite these important contributions, several limitations remain. First, much of the existing literature focuses on identifying methodological problems rather than translating them into a coherent evaluation strategy for practical use. Theoretical work explains why uncertainty estimation is difficult, but often stops short of proposing a clearly structured framework for uncertainty-aware reporting in constrained-data settings. Second, the interaction between limited sample size and class imbalance is acknowledged in parts of the literature, but it is not always incorporated into a unified account of evaluation design. As a result, resampling strategy and metric choice are often discussed in parallel rather than as interconnected components of trustworthy model assessment.
 
-The project is guided by the following research question:
+A further limitation is that many studies still emphasise mean performance estimates more strongly than the broader question of interpretive reliability. In practical machine learning workflows, the central issue is rarely just whether one protocol yields a slightly higher average score than another. The more important question is whether the evaluation process provides a sufficiently stable, transparent, and defensible basis for deciding which model should be trusted. This is especially relevant when limited data magnifies the impact of sample composition, fold assignment, and minority-class representation.
+
+Therefore, the main research gap identified in this portfolio is the lack of a clear and practically structured evaluation framework that brings together validation-protocol comparison, uncertainty-aware interpretation, and imbalance-sensitive metric selection for classical machine learning models under limited and imbalanced data conditions. Existing research provides strong insights into individual aspects of the problem, but less guidance on how these aspects should be integrated into a coherent methodological design.
+
+This gap leads to the following research question:
 
 \textbf{How reliable are common evaluation protocols for classical machine learning models under limited and imbalanced data, and can uncertainty-aware resampling strategies provide more trustworthy model assessment?}
 
-The objectives of the proposed study are:
+To address this question, the portfolio is guided by four objectives:
 \begin{enumerate}[label=\arabic*.]
     \item To review how current literature evaluates classical machine learning models in limited-data settings.
-    \item To compare common evaluation protocols such as hold-out split, stratified k-fold cross-validation, repeated cross-validation, and bootstrap-based estimation.
-    \item To assess how small sample size and class imbalance affect the stability and trustworthiness of reported performance metrics.
+    \item To compare common evaluation protocols, including hold-out split, stratified k-fold cross-validation, repeated cross-validation, and bootstrap-based estimation.
+    \item To assess how limited sample size and class imbalance affect the stability and trustworthiness of reported performance metrics.
     \item To propose a more transparent and uncertainty-aware evaluation framework for constrained-data settings.
 \end{enumerate}
 
+These objectives are intentionally methodological rather than algorithmic. The purpose of the study is not to maximise benchmark performance or introduce a novel predictive model. Instead, the goal is to improve the reliability and interpretability of model assessment under constrained-data conditions. In this sense, the expected contribution of the portfolio lies in evaluation design and reporting practice rather than in model innovation.
+
 \section{Proposed Methodology}
 
-The proposed study is methodological rather than algorithmic. Its purpose is not to develop a new predictive model, but to compare and evaluate common model validation procedures under limited and imbalanced data conditions.
+The proposed study is designed to investigate how common evaluation protocols behave when classical machine learning models are assessed under limited and imbalanced data conditions. The methodological emphasis is deliberate. Rather than asking which algorithm achieves the highest score on a particular benchmark, the study asks how different validation procedures influence the stability, interpretation, and trustworthiness of performance estimates. This aligns directly with the research gap identified in the literature, namely the need for a more integrated framework combining validation-protocol comparison, uncertainty-aware interpretation, and imbalance-sensitive metric selection.
 
-The study will focus on a small set of classical machine learning models, such as Logistic Regression, Random Forest, and Support Vector Machine or XGBoost. These models are appropriate because they are widely used and allow the project to focus on evaluation design rather than model architecture.
+\subsection{Study design}
 
-The proposed evaluation protocols include:
+The study will adopt a comparative methodological design. A small set of classical machine learning models will be evaluated under multiple validation protocols, and the resulting performance estimates will be compared in terms of stability, sensitivity to sample composition, and implications for model ranking. The focus is therefore not on maximising predictive performance, but on examining the behaviour of evaluation procedures themselves.
+
+This design is appropriate because it allows the study to isolate the role of evaluation strategy while avoiding unnecessary complexity from model architecture. Since the portfolio is concerned with reliability of assessment rather than novelty of modelling technique, a compact and interpretable design is preferable.
+
+\subsection{Data strategy}
+
+The proposed study will use classification datasets that reflect constrained-data conditions. These may include one or two publicly available real datasets with relatively small sample sizes, as well as down-sampled versions of larger datasets if needed to examine how stability changes as sample size decreases. Where possible, datasets with some degree of class imbalance will be prioritised, since imbalance is a common feature of limited-data applications and is central to the methodological focus of the project.
+
+The purpose of this data strategy is not to claim domain-wide generalisability from a single dataset, but to create a setting in which the methodological effects of validation design can be observed clearly. A controlled comparison across small and potentially imbalanced datasets would allow the study to examine how strongly performance estimates depend on resampling choice and metric selection.
+
+\subsection{Model selection}
+
+The study will focus on a limited set of widely used classical machine learning models, such as Logistic Regression, Random Forest, and either Support Vector Machine or XGBoost. These models are suitable for several reasons. First, they are common reference points in applied machine learning and therefore make the findings easier to interpret. Second, they provide variation in modelling behaviour without introducing the additional complexity associated with deep learning architectures. Third, they allow the study to keep the methodological focus on evaluation procedures rather than on extensive hyperparameter engineering.
+
+The intention is not to determine a universally best classifier, but to assess whether conclusions about model superiority remain stable across different validation designs.
+
+\subsection{Evaluation protocols}
+
+Four evaluation protocols will be compared:
 \begin{itemize}
-    \item single hold-out split,
+    \item a single hold-out split,
     \item stratified k-fold cross-validation,
     \item repeated stratified k-fold cross-validation,
     \item bootstrap-based performance estimation.
 \end{itemize}
 
-The metrics reported would include F1 score, Balanced Accuracy, AUROC, AUPRC, and uncertainty-related summaries such as mean performance across resamples and standard deviation or confidence interval estimates where appropriate. The analysis would focus on estimate stability, sensitivity to sample size, metric interpretation under class imbalance, and model ranking consistency across protocols.
+These protocols were selected because they represent a progression from simple but potentially unstable methods to more resampling-intensive approaches that may provide better insight into uncertainty. A single hold-out split is included as a baseline because it remains common in practice despite known instability in small datasets. Stratified k-fold cross-validation is included because it is a widely accepted standard and partially addresses class-composition issues. Repeated stratified k-fold extends this logic by examining whether repeated resampling improves stability and interpretive confidence. Bootstrap-based estimation is included because it offers an alternative resampling framework that may produce more informative uncertainty summaries in some settings.
 
-The expected output of the study would be a recommendation-oriented framework for evaluating classical machine learning models in constrained-data settings, with stronger emphasis on transparency and uncertainty-aware interpretation.
+Comparing these protocols will allow the study to assess not only differences in average reported performance, but also whether protocol choice changes the apparent stability of the estimate and the practical ranking of competing models.
+
+\subsection{Performance metrics}
+
+The study will report metrics that are appropriate for imbalanced classification and transparent interpretation. These are expected to include F1 score, Balanced Accuracy, AUROC, and AUPRC. In addition, uncertainty-related summaries such as mean performance across resamples, standard deviation, and where appropriate interval-style summaries will be considered. The inclusion of both central tendency and uncertainty measures is essential because the project is concerned not only with how well models perform, but also with how confidently those performance claims can be made.
+
+Metric choice is particularly important under class imbalance. A model may achieve a strong overall ranking metric while performing poorly on the minority class, which may be the most practically important set of cases. For this reason, the proposed methodology treats metric selection as part of evaluation design rather than as a separate reporting detail.
+
+\subsection{Analysis plan}
+
+The analysis will focus on five main questions.
+
+First, how stable are performance estimates under different evaluation protocols? This addresses the central concern that different validation strategies may produce substantially different levels of variability.
+
+Second, how does limited sample size affect evaluation reliability? By using small or down-sampled datasets, the study will examine whether instability increases as the sample becomes more constrained.
+
+Third, how does class imbalance affect metric interpretation? This part of the analysis will consider whether conclusions differ depending on whether performance is assessed through more general ranking measures or more imbalance-sensitive metrics.
+
+Fourth, how consistent is model ranking across protocols? This question is important because in practice the goal is often to select one model rather than merely to report several scores. If ranking changes substantially across evaluation designs, this would indicate that the apparent superiority of a model is not robust.
+
+Fifth, does uncertainty-aware reporting provide a more defensible basis for interpretation than single point estimates alone? This question connects the empirical comparison back to the broader methodological goal of transparency in constrained-data evaluation.
+
+\subsection{Expected contribution}
+
+The expected contribution of the proposed study is methodological. It is intended to provide a more structured basis for evaluating classical machine learning models under limited and imbalanced data conditions. Rather than proposing a new algorithm, the study aims to clarify how evaluation protocols, metric choice, and uncertainty summaries should be interpreted together when evidence is limited. The intended outcome is a practical recommendation-oriented framework for more trustworthy model assessment.
+
+\subsection{Practical and ethical considerations within the methodology}
+
+The methodological design also reflects practical and ethical concerns. Overconfident evaluation in small or imbalanced datasets can support claims that are not justified by the available evidence. This is particularly problematic in applications where model outputs may influence consequential decisions. For this reason, the proposed methodology emphasises caution in interpretation, explicit attention to uncertainty, and metric choices that reflect the actual prediction problem rather than reporting convenience.
+
+Overall, the proposed methodology is designed to respond directly to the weaknesses identified in the literature: excessive reliance on point estimates, insufficient integration of imbalance into evaluation logic, and limited guidance on how to translate methodological warnings into a coherent assessment framework.
 
 \section{Data, Ethics, and Practical Considerations}
 
-The proposed study would require classification datasets that reflect limited-data conditions and, where possible, class imbalance. The aim would not be to maximise benchmark performance, but to create a setting in which the consequences of validation design can be observed clearly.
+The proposed study requires datasets that reflect constrained-data conditions and, where possible, some degree of class imbalance. The purpose of dataset selection is not to maximise benchmark performance, but to create a setting in which the methodological effects of validation design can be examined clearly. For this reason, relatively small classification datasets, or down-sampled versions of larger datasets, would be appropriate for the study. These data conditions are essential because the portfolio is concerned with how evaluation behaves when evidence is limited rather than when data abundance masks methodological weaknesses.
 
-Several ethical and practical issues arise in this context. First, limited-data evaluation can create a false sense of model reliability if uncertainty is not communicated clearly. Second, imbalanced datasets may conceal weak minority-class performance when inappropriate metrics are used. Third, unstable evaluation may lead researchers to select models on the basis of noise rather than robust evidence.
+From a practical perspective, several considerations shape the feasibility of the proposed design. First, the datasets must support repeated resampling without becoming too small to permit meaningful comparison. Second, model complexity must remain proportionate to sample size, otherwise instability may be driven mainly by severe overfitting rather than by evaluation design itself. Third, metric choice must reflect the structure of the data, particularly where class imbalance makes overall performance summaries potentially misleading. These considerations reinforce the need for a methodology that is transparent not only about numerical results, but also about the limits of those results.
 
-To address these concerns, the proposed framework would emphasise repeated resampling, careful metric selection, and explicit acknowledgement of uncertainty. The project would also avoid making claims that exceed the strength of the evidence provided by the validation procedure.
+There are also important ethical implications. Unreliable evaluation can produce overconfident claims about model quality, which may in turn encourage inappropriate trust in a system that has not been assessed robustly. This concern is particularly significant in applied domains where model outputs may influence decisions affecting individuals, resources, or risk management. In such contexts, reporting only a single favourable performance estimate may conceal instability, weak minority-class performance, or sensitivity to arbitrary split decisions.
+
+To address these concerns, the proposed framework emphasises three principles. First, uncertainty should be made visible rather than hidden behind point estimates alone. Second, metric choice should reflect the real prediction problem, particularly when minority-class performance is practically important. Third, conclusions should remain proportionate to the strength of the evidence. The proposed study therefore adopts a cautious reporting stance: the goal is not to maximise apparent model quality, but to provide a more defensible basis for interpretation under constrained-data conditions.
 
 \section{Project Planning}
 
-A structured project plan is important for ensuring that the portfolio develops in a coherent way. The work has been organised over a two-week period, including repository setup, literature search, close reading of key methodological papers, research gap identification, methodology design, drafting, revision, and viva preparation.
+The development of this portfolio follows a structured two-week plan designed to connect topic scoping, literature review, methodological design, and final writing into a coherent workflow. The project begins with repository setup, research question refinement, and literature collection. This is followed by thematic clustering of papers, close reading of key methodological studies, and formal identification of the research gap. The second phase focuses on designing the proposed methodology, drafting the report sections, revising the argument, and preparing submission materials.
 
-The workflow is designed so that the literature review informs the research gap, the research gap informs the methodology, and the methodology is then linked to practical and ethical considerations. This structure supports a coherent final report rather than a collection of disconnected sections.
+This sequencing is important because each stage depends on the previous one. The literature review informs the gap analysis; the gap analysis shapes the methodology; and the methodology must then be aligned with practical, ethical, and reporting considerations. A structured plan is therefore necessary not only for time management but also for intellectual coherence. Without such sequencing, the report would risk becoming a collection of loosely related observations rather than a well-argued portfolio.
+
+The use of GitHub further supports this planning process by providing a transparent record of development. Planning notes, literature summaries, methodology sketches, and report drafts are stored as part of the repository so that the progression from early scoping to final written output is visible. This makes the repository part of the academic process rather than merely a storage location for the final PDF.
 
 \section{Non-Technical Summary}
 
-This project is about a simple but important question: how can we tell whether a machine learning model is genuinely reliable when we do not have much data?
+This project addresses a simple but important question: how can we tell whether a machine learning model is genuinely reliable when we do not have much data?
 
-In many practical settings, models are tested on small datasets, and the resulting scores can look more convincing than they really are. Different ways of splitting the data can lead to different conclusions, and commonly used metrics may not reflect the real difficulty of the prediction task, especially when one class is much rarer than another.
+In many real-world settings, machine learning models are tested on relatively small datasets. The resulting scores can look precise and convincing, but they may depend heavily on how the data was split, which validation procedure was chosen, and which performance metric was reported. The problem becomes even more serious when one class is much rarer than another, because some commonly reported metrics may make a model look stronger than it really is.
 
-The aim of this project is therefore not to build a new model, but to improve how models are judged. In practical terms, the proposed work seeks to identify evaluation approaches that are more stable, more transparent, and more honest about uncertainty. This matters because poor evaluation can lead to overconfident decisions about which models should be trusted in real applications.
+The purpose of this project is therefore not to build a new model. Instead, it is to improve the way models are evaluated. The proposed work compares common validation procedures and considers how uncertainty should be interpreted and reported more carefully. In practical terms, the project aims to support evaluation approaches that are more stable, more transparent, and less likely to encourage unjustified confidence in model performance.
+
+This matters because poor evaluation can lead to poor decisions. If a model appears strong only because of unstable testing or selective reporting, then claims about its usefulness may not be trustworthy. A better evaluation framework can therefore improve not only technical practice but also the quality of decisions made on the basis of machine learning systems.
 
 \section{Conclusion}
 
-This portfolio addresses the methodological challenge of evaluating classical machine learning models under limited and imbalanced data conditions. The literature suggests that evaluation instability, selection bias, and inappropriate metric choice can all distort performance interpretation when data are constrained. In response, this report identifies a gap in current practice and proposes a more transparent, uncertainty-aware framework for model assessment. The intended contribution is a clearer and more trustworthy basis for evaluation, rather than a new predictive modelling technique.
+This portfolio has examined the methodological challenge of evaluating classical machine learning models under limited and imbalanced data conditions. The literature shows that validation protocol choice, uncertainty estimation, model selection bias, and metric selection all play important roles in shaping how model performance is interpreted. It also shows that seemingly strong results may be unstable, overly optimistic, or insufficiently informative when evidence is limited.
+
+In response to these issues, the report has identified a research gap in the lack of a clearly structured framework that integrates uncertainty-aware resampling, imbalance-sensitive metric choice, and transparent model comparison. The proposed study addresses this gap through a methodological design that compares common validation protocols and places greater emphasis on interpretive reliability rather than score maximisation alone.
+
+The intended contribution of the portfolio is therefore not algorithmic innovation, but methodological clarification. By focusing on how models should be evaluated, rather than only on how they should be built, the project aims to support more trustworthy and more defensible model assessment in constrained-data settings.
 
 \bibliographystyle{plain}
 \bibliography{refs}
