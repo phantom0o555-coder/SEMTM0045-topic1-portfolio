@@ -1,1 +1,281 @@
+# Paper Matrix for Topic 1
+## Evaluation under Uncertainty and Limited Data
 
+This file summarises key papers related to evaluation reliability in limited-data and imbalanced-data settings. It is intended to support the literature review, research gap identification, methodology design, and practical considerations for the portfolio report.
+
+---
+
+## 1) Arlot, S. & Celisse, A. (2010)
+**Title:** *A Survey of Cross-Validation Procedures for Model Selection*
+
+**Problem**  
+Cross-validation is widely used for risk estimation and model selection, but the strengths, weaknesses, and appropriate use cases of different CV procedures are often misunderstood.
+
+**Method**  
+A statistical survey comparing multiple cross-validation procedures and synthesising both theoretical and empirical findings.
+
+**Main finding**  
+Cross-validation is not a single method but a family of methods. Different procedures involve different trade-offs in bias, variance, computational cost, and suitability for specific goals.
+
+**Limitation**  
+This is a survey paper rather than an application-specific empirical study, so it provides a framework rather than a single practical answer for all small-sample problems.
+
+**How to use in my report**  
+I will use this paper in the literature review to introduce the main evaluation protocols and to show that validation design should be chosen carefully rather than treated as interchangeable.
+
+**Reading notes**  
+Most important conclusion: Different cross-validation procedures serve different purposes and should not be treated as equivalent.  
+Limitation: It is a broad methodological survey and does not directly focus on one limited-data application setting.  
+How I will place it in the report: Literature Review, especially the opening section on evaluation protocol landscape.
+
+---
+
+## 2) Grandvalet, Y. & Bengio, Y. (2004)
+**Title:** *No Unbiased Estimator of the Variance of K-Fold Cross-Validation*
+
+**Problem**  
+Researchers often want to estimate the variance of k-fold cross-validation results, but it is unclear whether such an estimate can be made reliably.
+
+**Method**  
+Theoretical analysis of the covariance structure of k-fold cross-validation error estimates.
+
+**Main finding**  
+There is no universally unbiased estimator of the variance of k-fold cross-validation. Treating folds as independent can seriously underestimate uncertainty.
+
+**Limitation**  
+The paper is mathematically demanding and focuses on a theoretical limitation rather than providing a simple practical replacement.
+
+**How to use in my report**  
+I will use this paper to support the argument that uncertainty reporting in cross-validation is difficult and that reporting only a mean score can be misleading.
+
+**Reading notes**  
+Most important conclusion: Cross-validation uncertainty is intrinsically hard to estimate without bias.  
+Limitation: The paper explains the problem clearly but does not offer a universal practical fix.  
+How I will place it in the report: Critical Literature Review, in the section on uncertainty estimation and evaluation reliability.
+
+---
+
+## 3) Nadeau, C. & Bengio, Y. (2003)
+**Title:** *Inference for the Generalization Error*
+
+**Problem**  
+Many statistical comparisons of model performance ignore training-set randomness and resampling dependence, leading to overly optimistic conclusions.
+
+**Method**  
+Theoretical analysis of generalisation error inference under repeated resampling and cross-validation settings.
+
+**Main finding**  
+If dependence between resampled estimates is ignored, variance can be underestimated and statistical comparisons between models can become unreliable.
+
+**Limitation**  
+The paper is mainly about statistical inference and hypothesis testing rather than class imbalance or real-world deployment issues.
+
+**How to use in my report**  
+I will use this paper in the methodology section to justify why repeated validation scores should not automatically be treated as independent observations.
+
+**Reading notes**  
+Most important conclusion: Naive statistical comparisons between validation scores can lead to false confidence.  
+Limitation: It focuses more on inference procedures than on practical data constraints such as imbalance.  
+How I will place it in the report: Methodology Justification, especially when discussing model comparison and reliability of conclusions.
+
+---
+
+## 4) Cawley, G.C. & Talbot, N.L.C. (2010)
+**Title:** *On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation*
+
+**Problem**  
+Overfitting is usually discussed in model training, but model selection itself can also overfit and distort performance evaluation.
+
+**Method**  
+Theoretical and empirical discussion of overfitting in model selection criteria and its effect on performance estimation.
+
+**Main finding**  
+Model selection can introduce substantial selection bias, sometimes on the same scale as the real differences between algorithms. This can make performance claims overly optimistic.
+
+**Limitation**  
+The paper focuses mainly on selection bias and does not centre specifically on the combined problem of limited data and class imbalance.
+
+**How to use in my report**  
+I will use this paper to argue that evaluation problems do not arise only from train/test splitting but also from the model selection process itself.
+
+**Reading notes**  
+Most important conclusion: Performance inflation can arise from the model selection stage, not only from the final testing stage.  
+Limitation: It is not specifically designed around limited-data and imbalanced-data interaction.  
+How I will place it in the report: Literature Review and Research Gap transition, to justify stricter evaluation design.
+
+---
+
+## 5) Varoquaux, G. (2018)
+**Title:** *Cross-validation failure: Small sample sizes lead to large error bars*
+
+**Problem**  
+Small-sample studies often report cross-validation results as if they were stable, even though the uncertainty may be very large.
+
+**Method**  
+Methodological discussion supported by evidence and examples from neuroimaging.
+
+**Main finding**  
+Small sample sizes can produce very large error bars in cross-validation, meaning that apparently strong results may actually be unstable.
+
+**Limitation**  
+The examples are mainly drawn from neuroimaging, so domain-specific details may not transfer perfectly to every field.
+
+**How to use in my report**  
+I will use this paper as a central source in the introduction and literature review to show why small-sample evaluation is a serious methodological problem.
+
+**Reading notes**  
+Most important conclusion: Small datasets can make cross-validation results far less trustworthy than they appear.  
+Limitation: The empirical examples come mainly from one application domain.  
+How I will place it in the report: Introduction and Critical Literature Review, as a key source on small-sample instability.
+
+---
+
+## 6) Saito, T. & Rehmsmeier, M. (2015)
+**Title:** *The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets*
+
+**Problem**  
+ROC plots and ROC-AUC are often used by default in binary classification, but they may be misleading in imbalanced settings.
+
+**Method**  
+Theoretical and graphical comparison of ROC plots and precision-recall plots for imbalanced datasets.
+
+**Main finding**  
+Precision-recall analysis is often more informative than ROC analysis when class imbalance is strong, especially when interest is focused on positive-class prediction quality.
+
+**Limitation**  
+The paper focuses on metric interpretation in imbalanced binary classification rather than on cross-validation variance or model selection bias.
+
+**How to use in my report**  
+I will use this paper to justify my choice of metrics and to explain why accuracy or ROC-AUC alone may be insufficient in imbalanced-data settings.
+
+**Reading notes**  
+Most important conclusion: PR-based evaluation can be more informative than ROC-based evaluation under class imbalance.  
+Limitation: It does not address uncertainty estimation or validation protocol choice directly.  
+How I will place it in the report: Methodology, especially the subsection on metric choice and imbalance-aware evaluation.
+
+---
+
+## 7) Singh, V. et al. (2021)
+**Title:** *Impact of train/test sample regimen on performance estimate stability of machine learning in cardiovascular imaging*
+
+**Problem**  
+In real small-data applications, different validation regimens may produce different levels of stability in performance estimates.
+
+**Method**  
+Empirical comparison of stratified split-sample validation, 10-fold CV, repeated 10-fold CV, bootstrap, and leave-one-out validation on two cardiovascular imaging datasets.
+
+**Main finding**  
+Single split-sample validation showed the greatest instability in AUC estimates, while repeated CV and bootstrap-based approaches generally produced more stable results.
+
+**Limitation**  
+This is an application-specific study based on two datasets, so the findings are strong practical evidence but not a universal theorem.
+
+**How to use in my report**  
+I will use this paper as practical evidence that validation protocol choice materially affects result stability in real limited-data settings.
+
+**Reading notes**  
+Most important conclusion: Validation design can substantially change the stability of reported model performance in practice.  
+Limitation: The evidence comes from a specific medical imaging context.  
+How I will place it in the report: Literature Review, as an applied example supporting the methodological critique.
+
+---
+
+## 8) Allgaier, J. & Pryss, R. (2024)
+**Title:** *Practical approaches in evaluating validation and biases of machine learning applied to mobile health studies*
+
+**Problem**  
+Validation design can be misleading if hidden group structure or temporal drift is ignored, especially in mobile health studies.
+
+**Method**  
+Comparison of several train/test split and cross-validation designs across seven longitudinal mobile health datasets, including scenarios reflecting concept drift and hidden groups.
+
+**Main finding**  
+Validation procedures must reflect realistic deployment conditions. Ignoring group structure or time structure can produce performance estimates that look strong but do not generalise well.
+
+**Limitation**  
+The study focuses on longitudinal mobile health data, so not all domains will share the same temporal and grouping properties.
+
+**How to use in my report**  
+I will use this paper in practical considerations to extend the discussion from internal validation to external validity and realistic testing design.
+
+**Reading notes**  
+Most important conclusion: A validation scheme is only meaningful if it reflects the real structure of the data and deployment setting.  
+Limitation: Its strongest lessons come from longitudinal and grouped datasets.  
+How I will place it in the report: Practical Considerations and External Validity discussion.
+
+---
+
+## 9) Yates, L. et al. (2022/2023)
+**Title:** *Cross validation for model selection: a primer with examples from ecology*
+
+**Problem**  
+Cross-validation is widely used in applied research, but key issues such as score uncertainty, bias correction, and selection rules are often overlooked.
+
+**Method**  
+A methodological primer explaining common CV approaches and discussing practical guidance for model selection and score interpretation.
+
+**Main finding**  
+Sound model selection requires attention not only to average scores but also to estimation uncertainty, bias correction, and decision rules that avoid overfitting to noisy estimates.
+
+**Limitation**  
+The paper is application-oriented and framed around ecology, so it is less theoretically formal than some of the core statistical papers.
+
+**How to use in my report**  
+I will use this paper to support practical recommendations in the methodology section, especially around cautious selection and reporting.
+
+**Reading notes**  
+Most important conclusion: Careful model selection requires more than picking the highest mean validation score.  
+Limitation: It is less mathematically formal than the core statistical foundation papers.  
+How I will place it in the report: Methodology Discussion, especially when proposing better evaluation practice.
+
+---
+
+## 10) Zhao, S. et al. (2025)
+**Title:** *A Survey on Small Sample Imbalance Problem: Metrics, Feature Analysis, and Solutions*
+
+**Problem**  
+Small-sample and class-imbalance problems often occur together, but many studies discuss them separately or focus only on algorithmic fixes.
+
+**Method**  
+A recent survey of the small-sample imbalance problem, covering metrics, complexity analysis, and solution strategies.
+
+**Main finding**  
+The paper argues that small-sample imbalance should be analysed from the data perspective before choosing methods, and that classifier choice may matter more than some resampling tricks.
+
+**Limitation**  
+This is a recent arXiv survey rather than a long-established journal article, so it should be used as a supporting source rather than the sole foundation.
+
+**How to use in my report**  
+I will use this paper to strengthen the broader context section and to show that limited data and imbalance are often linked rather than independent concerns.
+
+**Reading notes**  
+Most important conclusion: Small sample size and class imbalance should be analysed jointly rather than as separate minor problems.  
+Limitation: As a recent survey, it is better used for context than as a primary theoretical foundation.  
+How I will place it in the report: Broader Context or Recent Literature section.
+
+---
+
+## 11) Zantvoort, K. et al. (2024)
+**Title:** *Estimation of minimal data set sizes for machine learning predictions in digital mental health interventions*
+
+**Problem**  
+Researchers often do not know how much data is needed before model performance estimates become reasonably trustworthy.
+
+**Method**  
+Empirical study using learning curves and multiple algorithms across varying dataset sizes in digital mental health intervention data.
+
+**Main finding**  
+Very small datasets, especially at low sample sizes, can overestimate predictive performance, and more complex models are more vulnerable to instability and overfitting.
+
+**Limitation**  
+The findings are based on one application domain, and minimum useful sample size will still depend on the task and data structure.
+
+**How to use in my report**  
+I will use this paper in the introduction and practical implications discussion to show that limited data can systematically distort performance claims.
+
+**Reading notes**  
+Most important conclusion: Small datasets can systematically inflate confidence in model performance.  
+Limitation: The exact sample size implications may not transfer directly to every domain.  
+How I will place it in the report: Introduction and Practical Implications section.
+
+---
